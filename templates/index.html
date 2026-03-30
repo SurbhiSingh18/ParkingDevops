@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Parking</title>
+
+    <style>
+        body {
+           margin: 0;
+           font-family: 'Segoe UI';
+           background: linear-gradient(135deg, #20a7c5, #ea2b54);
+           height: 100vh;              /* IMPORTANT */
+           overflow: hidden;           /* removes extra scroll color */
+        }
+
+        /* Navbar */
+        .navbar {
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        /* Layout */
+        .container {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        /* Card */
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            width: 360px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        /* Inputs */
+        input, select {
+            width: 100%;
+            height: 45px;
+            padding: 10px;
+            margin: 8px 0 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 8px rgba(102,126,234,0.5);
+        }
+
+        /* Button */
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #5a67d8;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(102,126,234,0.6);
+        }
+
+        /* Booked list */
+        .booked-list p {
+            background: #f1f3ff;
+            padding: 8px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cancel-btn {
+            background: red;
+            padding: 4px 8px;
+            border-radius: 5px;
+            color: white;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            opacity: 0;
+            transition: 0.5s;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        /* Bubbles animation */
+        .bubbles {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .bubbles span {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.4);
+            bottom: -100px;
+            border-radius: 50%;
+            animation: rise 12s infinite ease-in;
+        }
+
+        .bubbles span:nth-child(1){left:10%;animation-delay:0s;}
+        .bubbles span:nth-child(2){left:20%;animation-delay:2s;}
+        .bubbles span:nth-child(3){left:30%;animation-delay:4s;}
+        .bubbles span:nth-child(4){left:40%;animation-delay:1s;}
+        .bubbles span:nth-child(5){left:50%;animation-delay:3s;}
+        .bubbles span:nth-child(6){left:60%;animation-delay:5s;}
+        .bubbles span:nth-child(7){left:70%;animation-delay:2s;}
+        .bubbles span:nth-child(8){left:80%;animation-delay:6s;}
+        .bubbles span:nth-child(9){left:90%;animation-delay:4s;}
+        .bubbles span:nth-child(10){left:25%;animation-delay:7s;}
+
+        @keyframes rise {
+            0% {transform: translateY(0); opacity:0.5;}
+            100% {transform: translateY(-800px); opacity:0;}
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Animated Background -->
+<div class="bubbles">
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<div class="navbar">
+    Smart Slot Parking Booking System 
+    
+    <a href="/bookings" 
+       style="color:white; position:absolute; right:20px; top:18px; font-size:14px; text-decoration:none;">
+        View Bookings
+    </a>
+</div>
+
+<div class="container">
+<div class="card">
+
+<form action="/book" method="post">
+
+    <label>Name:</label>
+    <input type="text" name="name" required>
+
+    <label>Vehicle:</label>
+    <select name="vehicle" required>
+        <option value="" disabled selected>Select Vehicle</option>
+        <option value="Car">Car</option>
+        <option value="Bike">Bike</option>
+        <option value="Truck">Truck</option>
+    </select>
+
+    <label>Date:</label>
+    <input type="date" name="date" min="{{ min_date }}" max="{{ max_date }}" required>
+
+    <label>Start Time:</label>
+    <input type="time" name="start_time" required>
+
+    <label>End Time:</label>
+    <input type="time" name="end_time" required>
+
+    <label>Select Slot:</label>
+    <select name="slot" required>
+        <option value="" disabled selected>Select Slot</option>
+        {% for slot in slots %}
+            {% if slot in booked_slots %}
+                <option disabled>{{ slot }} (Booked)</option>
+            {% else %}
+                <option value="{{ slot }}">{{ slot }}</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+
+    <button type="submit">Book Slot</button>
+</form>
+
+
+</div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const msg = params.get("msg");
+    const toast = document.getElementById("toast");
+
+    if (msg === "success") {
+        toast.innerText = "Booking Successful!";
+        toast.classList.add("show");
+    }
+    else if (msg === "already") {
+        toast.innerText = "Slot already booked!";
+        toast.classList.add("show");
+    }
+    else if (msg === "cancelled") {
+        toast.innerText = "Booking Cancelled!";
+        toast.classList.add("show");
+    }
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 3000);
+</script>
+
+</body>
+</html>
