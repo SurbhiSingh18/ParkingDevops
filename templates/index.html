@@ -14,6 +14,7 @@
 
         /* Navbar */
         .navbar {
+            position: relative;   /* ⭐ IMPORTANT FIX */
             color: white;
             padding: 15px;
             text-align: center;
@@ -115,6 +116,25 @@
             opacity: 1;
         }
 
+        .view-btn {
+    position: absolute;
+    right: 20px;
+    top: 12px;
+    background: white;
+    color: #333;
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.view-btn:hover {
+    background: #eee;
+    transform: scale(1.05);
+}
+
         /* Bubbles animation */
         .bubbles {
             position: fixed;
@@ -163,10 +183,7 @@
 <div class="navbar">
     Smart Slot Parking Booking System 
     
-    <a href="/bookings" 
-       style="color:white; position:absolute; right:20px; top:18px; font-size:14px; text-decoration:none;">
-        View Bookings
-    </a>
+    <a href="/bookings" class="view-btn">View Bookings</a>
 </div>
 
 <div class="container">
@@ -186,7 +203,10 @@
     </select>
 
     <label>Date:</label>
-    <input type="date" name="date" min="{{ min_date }}" max="{{ max_date }}" required>
+    <input type="date" name="date" 
+       min="{{ min_date }}" 
+       max="{{ max_date }}"  
+       required>
 
     <label>Start Time:</label>
     <input type="time" name="start_time" required>
@@ -207,6 +227,7 @@
     </select>
 
     <button type="submit">Book Slot</button>
+
 </form>
 
 
@@ -236,6 +257,8 @@
     setTimeout(() => {
         toast.classList.remove("show");
     }, 3000);
+
+
 </script>
 
 </body>

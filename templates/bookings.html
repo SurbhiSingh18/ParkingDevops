@@ -8,7 +8,8 @@ body {
     margin: 0;
     font-family: 'Segoe UI';
     background: linear-gradient(135deg, #4ab3c8, #cf47a1);
-    color: white;
+    height: 100vh;
+    overflow: hidden;
 }
 
 /* NAVBAR */
@@ -86,10 +87,43 @@ tr:hover {
 .back-btn:hover {
     background: #eee;
 }
+
+.bubbles span {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background: rgba(255,255,255,0.3);
+    bottom: -100px;
+    border-radius: 50%;
+    animation: rise 12s infinite ease-in;
+}
+
+/* IMPORTANT: ADD DIFFERENT POSITIONS */
+.bubbles span:nth-child(1){left:10%;animation-delay:0s;}
+.bubbles span:nth-child(2){left:20%;animation-delay:2s;}
+.bubbles span:nth-child(3){left:30%;animation-delay:4s;}
+.bubbles span:nth-child(4){left:40%;animation-delay:1s;}
+.bubbles span:nth-child(5){left:50%;animation-delay:3s;}
+.bubbles span:nth-child(6){left:60%;animation-delay:5s;}
+.bubbles span:nth-child(7){left:70%;animation-delay:2s;}
+.bubbles span:nth-child(8){left:80%;animation-delay:6s;}
+.bubbles span:nth-child(9){left:90%;animation-delay:4s;}
+.bubbles span:nth-child(10){left:25%;animation-delay:7s;}
+
+@keyframes rise {
+    0% { transform: translateY(0); opacity: 0.5; }
+    100% { transform: translateY(-800px); opacity: 0; }
+}
 </style>
 </head>
 
 <body>
+
+<div class="bubbles">
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+</div>
+
 <div class="navbar">🚗 Smart Parking Dashboard</div>
 
 <div class="container">
@@ -98,12 +132,12 @@ tr:hover {
     <div class="summary">
         <div class="card">
             <h3>Total Bookings</h3>
-            <p>{{ booked_slots|length }}</p>
+            <p>{{ bookings|length }}</p>
         </div>
 
         <div class="card">
             <h3>Available Slots</h3>
-            <p>{{ 20 - booked_slots|length }}</p>
+            <p>{{ 20 - bookings|length }}</p>
         </div>
 
         <div class="card">
@@ -123,13 +157,13 @@ tr:hover {
                 <th>Time</th>
             </tr>
 
-            {% for slot, details in booked_slots.items() %}
+            {% for booking in bookings %}
             <tr>
-                <td>{{ slot }}</td>
-                <td>{{ details.name }}</td>
-                <td>{{ details.vehicle }}</td>
-                <td>{{ details.date }}</td>
-                <td>{{ details.start_time }} - {{ details.end_time }}</td>
+                <td>{{ booking.slot }}</td>
+                <td>{{ booking.name }}</td>
+                <td>{{ booking.vehicle }}</td>
+                <td>{{ booking.date }}</td>
+                <td>{{ booking.start_time }} - {{ booking.end_time }}</td>
             </tr>
             {% endfor %}
         </table>
