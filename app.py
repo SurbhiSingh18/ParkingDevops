@@ -4,19 +4,18 @@ from datetime import datetime, timedelta
 app = Flask(__name__)
 
 slots = [f"Slot {i}" for i in range(1, 21)]
-booked_slots = {}  
-# structure:
+
+# Structure:
 # {
 #   "2026-04-03": {
-#       "Slot 1": {details},
-#       "Slot 2": {details}
+#       "Slot 1": {details}
 #   }
 # }
+booked_slots = {}
 
+# ---------------- HOME ----------------
 @app.route('/')
 def home():
-    from datetime import datetime, timedelta
-
     today = datetime.today().date()
     max_date = today + timedelta(days=7)
 
@@ -35,16 +34,17 @@ def home():
         max_date=max_date
     )
 
+# ---------------- BOOK ----------------
 @app.route('/book', methods=['POST'])
 def book():
     name = request.form['name']
+    college_id = request.form['college_id']
+    password = request.form['password']
     vehicle = request.form['vehicle']
     slot = request.form['slot']
     date = request.form['date']
     start_time = request.form['start_time']
     end_time = request.form['end_time']
-
-    date = request.form['date']
 
     if date not in booked_slots:
         booked_slots[date] = {}
@@ -54,45 +54,46 @@ def book():
 
     booked_slots[date][slot] = {
         "name": name,
+        "college_id": college_id,
+        "password": password,
         "vehicle": vehicle,
         "start_time": start_time,
         "end_time": end_time
-}
+    }
 
     return redirect('/?date=' + date + '&msg=success')
 
-@app.route('/cancel/<date>/<slot>')
-def cancel(date, slot):
+# ---------------- CANCEL ----------------
+@app.route('/cancel', methods=['POST'])
+def cancel():
+    slot = request.form['slot']
+    date = request.form['date']
+    entered_id = request.form['college_id']
+    entered_password = request.form['password']
+
     if date in booked_slots and slot in booked_slots[date]:
-        del booked_slots[date][slot]
+        booking = booked_slots[date][slot]
 
-        if not booked_slots[date]:
-            del booked_slots[date]
+        if booking["college_id"] == entered_id and booking["password"] == entered_password:
+            del booked_slots[date][slot]
+            return redirect('/?msg=cancelled')
+        else:
+            return redirect('/?msg=invalid')
 
-    return redirect('/?msg=cancelled')
+    return redirect('/')
 
+# ---------------- BOOKINGS DASHBOARD ----------------
 @app.route('/bookings')
 def bookings():
-    all_bookings = []
+    sorted_dates = sorted(booked_slots.keys())
 
-    for date, slots_data in booked_slots.items():
-        for slot, details in slots_data.items():
-            slot_number = int(slot.split()[1])  # Slot 7 → 7
+    return render_template(
+        'bookings.html',
+        booked_slots=booked_slots,
+        dates=sorted_dates,
+        slots=slots
+    )
 
-            all_bookings.append({
-                "slot": slot,
-                "slot_num": slot_number,
-                "name": details["name"],
-                "vehicle": details["vehicle"],
-                "date": date,
-                "start_time": details["start_time"],
-                "end_time": details["end_time"]
-            })
-
-    # ✅ SORT BY DATE → SLOT NUMBER
-    all_bookings.sort(key=lambda x: (x["date"], x["slot_num"]))
-
-    return render_template('bookings.html', bookings=all_bookings)
-
+# ---------------- RUN ----------------
 if __name__ == '__main__':
     app.run(debug=True)

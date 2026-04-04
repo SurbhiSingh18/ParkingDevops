@@ -8,8 +8,7 @@ body {
     margin: 0;
     font-family: 'Segoe UI';
     background: linear-gradient(135deg, #4ab3c8, #cf47a1);
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
 }
 
 /* NAVBAR */
@@ -19,60 +18,65 @@ body {
     font-size: 22px;
     font-weight: bold;
     text-align: center;
-}
-
-/* MAIN CONTAINER */
-.container {
-    max-width: 900px;
-    margin: 40px auto;
-}
-
-/* SUMMARY CARD */
-.summary {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 20px;
-}
-
-.card {
-    background: white;
-    color: black;
-    padding: 20px;
-    border-radius: 12px;
-    width: 30%;
-    text-align: center;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-}
-
-/* TABLE SECTION */
-.table-box {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    color: black;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th {
-    background: #667eea;
     color: white;
 }
 
-th, td {
+/* CONTAINER */
+.container {
+    max-width: 1000px;
+    margin: 30px auto;
+}
+
+/* DATE SECTION */
+.date-box {
+    background: white;
+    padding: 20px;
+    margin-bottom: 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.date-box h2 {
+    margin-bottom: 15px;
+}
+
+/* SLOT GRID */
+.slot-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+}
+
+/* SLOT BOX */
+.slot {
     padding: 12px;
-    border-bottom: 1px solid #ddd;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 500;
+    transition: 0.3s;
 }
 
-tr:hover {
-    background: #f1f3ff;
+/* AVAILABLE */
+.available {
+    background: #d4f8d4;
 }
 
-/* BUTTON */
+.available:hover {
+    transform: scale(1.05);
+}
+
+/* BOOKED */
+.booked {
+    background: #ffb3b3;
+}
+
+.booked small {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+}
+
+/* BACK BUTTON */
 .back-btn {
     display: inline-block;
     margin-top: 20px;
@@ -88,6 +92,7 @@ tr:hover {
     background: #eee;
 }
 
+/* BUBBLES */
 .bubbles span {
     position: absolute;
     width: 80px;
@@ -98,7 +103,6 @@ tr:hover {
     animation: rise 12s infinite ease-in;
 }
 
-/* IMPORTANT: ADD DIFFERENT POSITIONS */
 .bubbles span:nth-child(1){left:10%;animation-delay:0s;}
 .bubbles span:nth-child(2){left:20%;animation-delay:2s;}
 .bubbles span:nth-child(3){left:30%;animation-delay:4s;}
@@ -128,49 +132,38 @@ tr:hover {
 
 <div class="container">
 
-    <!-- SUMMARY -->
-    <div class="summary">
-        <div class="card">
-            <h3>Total Bookings</h3>
-            <p>{{ bookings|length }}</p>
-        </div>
+{% if dates|length == 0 %}
+    <h2 style="text-align:center; color:white;">No bookings yet</h2>
+{% endif %}
 
-        <div class="card">
-            <h3>Available Slots</h3>
-            <p>{{ 20 - bookings|length }}</p>
-        </div>
+{% for date in dates %}
+<div class="date-box">
 
-        <div class="card">
-            <h3>Status</h3>
-            <p>Active</p>
-        </div>
+    <h2>📅 {{ date }}</h2>
+
+    <div class="slot-grid">
+        {% for slot in slots %}
+            {% if slot in booked_slots[date] %}
+                <div class="slot booked">
+                    {{ slot }}
+                    <small>{{ booked_slots[date][slot].name }}</small>
+                    <small>{{ booked_slots[date][slot].vehicle }}</small>
+                    <small>{{ booked_slots[date][slot].start_time }} - {{ booked_slots[date][slot].end_time }}</small>
+                </div>
+            {% else %}
+                <div class="slot available">
+                    {{ slot }}
+                </div>
+            {% endif %}
+        {% endfor %}
     </div>
-
-    <!-- TABLE -->
-    <div class="table-box">
-        <table>
-            <tr>
-                <th>Slot</th>
-                <th>Name</th>
-                <th>Vehicle</th>
-                <th>Date</th>
-                <th>Time</th>
-            </tr>
-
-            {% for booking in bookings %}
-            <tr>
-                <td>{{ booking.slot }}</td>
-                <td>{{ booking.name }}</td>
-                <td>{{ booking.vehicle }}</td>
-                <td>{{ booking.date }}</td>
-                <td>{{ booking.start_time }} - {{ booking.end_time }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
-
-    <a href="/" class="back-btn">← Back to Home</a>
 
 </div>
+{% endfor %}
+
+<a href="/" class="back-btn">← Back to Home</a>
+
+</div>
+
 </body>
 </html>

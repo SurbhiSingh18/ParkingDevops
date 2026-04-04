@@ -8,8 +8,11 @@
            margin: 0;
            font-family: 'Segoe UI';
            background: linear-gradient(135deg, #20a7c5, #ea2b54);
-           height: 100vh;              /* IMPORTANT */
-           overflow: hidden;           /* removes extra scroll color */
+           min-height: 100vh;
+           overflow: hidden;
+           display: flex;
+           flex-direction: column;
+           align-items: center;          /* removes extra scroll color */
         }
 
         /* Navbar */
@@ -26,17 +29,17 @@
         .container {
             display: flex;
             justify-content: center;
-            margin-top: 40px;
+            align-items: center;   /* NEW */
+            flex: 1;
         }
 
         /* Card */
         .card {
             background: white;
-            padding: 25px;
+            padding: 20px;
             border-radius: 15px;
-            width: 360px;
+            width: 500px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
         }
 
         .card:hover {
@@ -47,9 +50,9 @@
         /* Inputs */
         input, select {
             width: 100%;
-            height: 45px;
+            height: 38px;
             padding: 10px;
-            margin: 8px 0 15px;
+            margin: 5px 0 10px;
             border-radius: 8px;
             border: 1px solid #ccc;
             box-sizing: border-box;
@@ -64,18 +67,26 @@
 
         /* Button */
         button {
-            width: 100%;
-            padding: 12px;
-            background: #667eea;
+            grid-column: span 2;   /* take full row */
+            width: 45%;
+            padding: 14px 0;
+            margin: 15px auto 0;   /* center horizontally */
+            display: block;
+
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
+
+            font-size: 15px;
+            font-weight: 600;
+
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
         button:hover {
-            background: #5a67d8;
+            background: #4fe452;
             transform: scale(1.05);
             box-shadow: 0 0 15px rgba(102,126,234,0.6);
         }
@@ -117,9 +128,9 @@
         }
 
         .view-btn {
-    position: absolute;
+    position: fixed;
     right: 20px;
-    top: 12px;
+    top: 15px;
     background: white;
     color: #333;
     padding: 8px 14px;
@@ -169,6 +180,17 @@
             0% {transform: translateY(0); opacity:0.5;}
             100% {transform: translateY(-800px); opacity:0;}
         }
+
+        form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        }
+
+        .full {
+        grid-column: span 2;
+        }
+ 
     </style>
 </head>
 
@@ -194,12 +216,18 @@
     <label>Name:</label>
     <input type="text" name="name" required>
 
+    <label>College ID:</label>
+    <input type="text" name="college_id" required>
+
+    <label>Password:</label>
+    <input type="password" name="password" required>
+
     <label>Vehicle:</label>
     <select name="vehicle" required>
         <option value="" disabled selected>Select Vehicle</option>
         <option value="Car">Car</option>
+        <option value="Scooter">Scotter</option>
         <option value="Bike">Bike</option>
-        <option value="Truck">Truck</option>
     </select>
 
     <label>Date:</label>
