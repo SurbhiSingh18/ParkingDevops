@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: parking-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: parking-app
+  template:
+    metadata:
+      labels:
+        app: parking-app
+    spec:
+      containers:
+        - name: parking-container
+          image: shruthikeerthana/parking-flask
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
